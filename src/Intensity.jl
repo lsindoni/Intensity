@@ -245,12 +245,9 @@ function calibrate_intensity(sp::SurvivalProbability, interpolation::Type{<:Abst
     base_int = 0.0
     for i in 1:length(terms)
         term = terms[i]
-        println(term)
         delta = term - base
         area = logp_prev - log(probs[i])
-        println(area)
         height = area / delta
-        println(height)
         if interpolation == PWL
             new_int = 2 * height - base_int
         else
