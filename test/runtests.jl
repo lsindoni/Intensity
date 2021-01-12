@@ -84,7 +84,10 @@ using Test
                 rng = MersenneTwister(31)
                 shape = (4, 3)
                 dts = rand(rng, ie, shape)
+                rng = MersenneTwister(31)
+                dts2 = rand(rng, ie, shape)
                 @test size(dts) == shape
+                @test dts == dts2
                 #surv_prob = Intensity.get_survival_probability(ie.intensity, ie.grid)
                 #emp_surv_prob = [1 - mean(dts .< t) for t in ie.grid]
             end

@@ -1,7 +1,8 @@
 module Intensity
 
-# Write your package code here.
 using Distributions, Random
+
+export InhomogeneousExponential
 
 EPSILON_DIGIT = 10
 
@@ -212,8 +213,8 @@ function get_survival_probability(di::DeterministicIntensity, term::Float64)
     end
     high_int = interextrapolate(di, term)
     delta = term - base
-    height = di.interpolation == Constant ? high_int : base_int
-    area = delta * height * 0.5
+    height = di.interpolation == Constant ? high_int : (base_int + high_int) * 0.5
+    area = delta * height
     return p * exp(-area)
 end
 
@@ -290,11 +291,11 @@ References:
     `Simulation of nonhomogeneous Poisson processes by thinning.' Naval Res. Logistics Quart, 26:403– 413.
 """
 function Base.rand(rng::AbstractRNG, ie::InhomogeneousExponential)
-    t = [0.0]
+    t = []
     s = [0.0]
     λs = interextrapolate(ie.intensity, ie.grid)
     λmax = maximum(λs)
-    while length(t) == 1
+    while length(t) == 0
         ξ = - log(rand(rng)) / λmax
         s_new = s[end] + ξ
         push!(s, s_new)
@@ -303,7 +304,7 @@ function Base.rand(rng::AbstractRNG, ie::InhomogeneousExponential)
         ζ = rand(rng)
         ζ <= θ && push!(t, s_new)
     end
-    return t[2]
+    return first(t)
 end
 
 
