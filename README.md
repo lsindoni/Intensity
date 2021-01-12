@@ -13,15 +13,15 @@ survival probabilities.
 ## Usage
 
 ```julia
-using Intensity, Random, Plots
+using Intensity, Random, Plots, Statistics
 gr()
 
 # Start from observed survival probabilities at time pegs
 ts = [0.0, 0.50, 1.00, 1.50, 2.00, 2.50, 3.00, 4.00, 5.00]
 obs_surv_prob = [1.0, 0.99, 0.95, 0.88, 0.80, 0.75, 0.70, 0.60, 0.45]
 sp = Intensity.SurvivalProbability(ts, obs_surv_prob)
-# From survival probabilities, calibrate a piecewise linear intensity matching it.
-dc = Intensity.calibrate_intensity(sp, Intensity.PWL)
+# From survival probabilities, calibrate a piecewise constant intensity matching it.
+dc = Intensity.calibrate_intensity(sp, Intensity.Constant)
 # Create the InhomogeneousExponential
 ie = InhomogeneousExponential(dc, 0:0.01:5)
 # Sample and verify that the empirical distribution matches the survival probability
@@ -32,6 +32,11 @@ dts = rand(rng, ie, NPTS)
 surv_prob = Intensity.get_survival_probability(ie.intensity, ie.grid)
 emp_surv_prob = [1 - mean(dts .< t) for t in ie.grid]
 plt = plot()
-plot!(plt, ie.grid, surv_prob; label="Th.")
+plot!(plt, ie.grid, surv_prob; label="th.")
 plot!(plt, ie.grid, emp_surv_prob; label="emp.")
+scatter!(plt, ts, obs_surv_prob; label="obs./calib.", marker=:cross)
 ```
+
+The end final result is displayed below
+
+![comparison](./docs/figures/comparison.png)

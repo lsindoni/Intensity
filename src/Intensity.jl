@@ -245,18 +245,21 @@ function calibrate_intensity(sp::SurvivalProbability, interpolation::Type{<:Abst
     base_int = 0.0
     for i in 1:length(terms)
         term = terms[i]
+        println(term)
         delta = term - base
         area = logp_prev - log(probs[i])
+        println(area)
         height = area / delta
+        println(height)
         if interpolation == PWL && (base != 0.0)
             new_int = 2 * height - base_int
         else
             new_int = height
         end
-        new_int = round(new_int * 10^EPSILON_DIGIT) / 10^EPSILON_DIGIT
+        new_int = round(new_int; digits=EPSILON_DIGIT)
         @assert new_int >= 0.0 "Intensity has to be positive: $new_int, $height, $base_int, $base"
         base_int = new_int
-        push!(new_terms, base)
+        push!(new_terms, term)
         push!(intensities, new_int)
         base = term
         logp_prev = log(probs[i])
