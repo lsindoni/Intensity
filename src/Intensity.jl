@@ -251,7 +251,7 @@ function calibrate_intensity(sp::SurvivalProbability, interpolation::Type{<:Abst
         println(area)
         height = area / delta
         println(height)
-        if interpolation == PWL && (base != 0.0)
+        if interpolation == PWL
             new_int = 2 * height - base_int
         else
             new_int = height
